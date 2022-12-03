@@ -7,5 +7,5 @@ import com.uva.users.model.User;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> findAllByEnabled(boolean enabled);
-    
+    User findByEmail(String email);
 }

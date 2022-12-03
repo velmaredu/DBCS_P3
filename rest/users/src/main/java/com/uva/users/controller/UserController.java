@@ -63,6 +63,18 @@ public class UserController {
         return repository.findById(id).orElseThrow(() -> new UserException(DEFUSEREXCEP));    
     }
 
+    /**
+     * Devuelve los usuarios filtrando entre si están habilitados o no.
+     * 
+     * @param enable Estado de habilitado.
+     * 
+     * @return Lista de usuarios que cumplen las características.
+     */
+    @GetMapping(params = "email")
+    public User getUsersWithEmail(@RequestParam String email) {
+        return repository.findByEmail(email);
+    }
+
     // POST
 
     /**
