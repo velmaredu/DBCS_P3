@@ -3,6 +3,8 @@ import { User } from 'app/shared/app.model';
 import { DataService } from 'app/shared/data.service';
 import { ClienteUsersService } from 'app/shared/cliente-users.service';
 import { HtmlParser } from '@angular/compiler';
+import { LoginUsuarioComponent } from 'app/login-usuario/login-usuario.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-listar-usuario',
@@ -15,7 +17,7 @@ export class ListarUsuarioComponent implements OnInit {
   mostrarMensaje!: boolean;
   mensaje!: string;
 
-  constructor(private clienteUser: ClienteUsersService, private datos: DataService ) { }
+  constructor(private clienteUser: ClienteUsersService, private datos: DataService,private ruta:ActivatedRoute, private router:Router, ) { }
 
   ngOnInit(): void {
 
@@ -82,6 +84,12 @@ export class ListarUsuarioComponent implements OnInit {
     )
   }
 
+  logOut(){
+
+    localStorage.clear();
+    this.router.navigate(['login']);
+  }
+
   activarSeleccionados(){
 
     var ids = "";
@@ -92,6 +100,8 @@ export class ListarUsuarioComponent implements OnInit {
           ids += + inputElements[i].id + ",";
       }
     }
+
+  
 
     this.clienteUser.enableUsers(ids.substring(0,ids.length -1)).subscribe(
       resp => {

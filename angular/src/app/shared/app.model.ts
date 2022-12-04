@@ -12,6 +12,12 @@ export interface User {
 
 }
 
+export interface Datos {
+
+    email: String,
+    password: String
+}
+
 export enum Role {
     HOST,
     GUEST

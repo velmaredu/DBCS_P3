@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http';
-import { User } from './app.model';
+import { User,Datos } from './app.model';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -50,5 +50,10 @@ export class ClienteUsersService {
   disableUsers(ids: string): Observable<HttpResponse<any>> {
     let url = ClienteUsersService.BASE_URI + "disable?user_id=" + ids;
     return this.http.put(url,{},{observe: 'response', responseType: 'text'});
+  }
+
+  loginUser(datos: Datos): Observable<HttpResponse<any>> {
+    let url = 'http://localhost:8081/autentificacion/';
+    return this.http.post(url,datos, { observe: 'response', responseType: 'text'})
   }
 }

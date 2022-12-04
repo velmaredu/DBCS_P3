@@ -1,7 +1,10 @@
 package com.uva.users.controller;
 
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +26,9 @@ import com.uva.users.repository.UserRepository;
 public class UserController {
     private final UserRepository repository;
     private static final String DEFUSEREXCEP = "Sin resultado";
+    
+    @Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     UserController(UserRepository repository) {
         this.repository = repository;
@@ -85,6 +91,8 @@ public class UserController {
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public String newUser(@RequestBody User user) {
+        String password = bCryptPasswordEncoder.encode(user.getPassword());
+        user.setPassword(password);
         try {
             repository.save(user);
             return "Nuevo registro creado";
@@ -110,7 +118,7 @@ public class UserController {
             tmp.setFirstName(body.getFirstName());
             tmp.setLastName(body.getLastName());
             tmp.setEmail(body.getEmail());
-            tmp.setPassword(body.getPassword());
+            tmp.setPassword(bCryptPasswordEncoder.encode(body.getPassword()));
             User.copyNonNullProperties(tmp, user);
             user.modified();
             repository.save(user);

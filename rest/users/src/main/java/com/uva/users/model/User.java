@@ -39,7 +39,7 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    @Size(max = 50)
+    @Size(max = 255)
     private String password;
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")

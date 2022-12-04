@@ -10,12 +10,15 @@ import { ClienteUsersService } from './shared/cliente-users.service';
 import { DataService } from './shared/data.service';
 import { HttpClientModule } from "@angular/common/http";
 import { FormsModule } from '@angular/forms';
+import { LoginUsuarioComponent } from './login-usuario/login-usuario.component';
+import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 
 @NgModule({
   declarations: [
     AppComponent,
     EditarUsuarioComponent,
-    ListarUsuarioComponent
+    ListarUsuarioComponent,
+    LoginUsuarioComponent
   ],
   imports: [
     BrowserModule,
@@ -25,7 +28,9 @@ import { FormsModule } from '@angular/forms';
   ],
   providers: [
     ClienteUsersService,
-    DataService
+    DataService,
+    { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
+    JwtHelperService
   ],
   bootstrap: [AppComponent]
 })
