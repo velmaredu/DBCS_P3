@@ -1,4 +1,4 @@
-package com.uva.autenticacionUsers.exception;
+package com.uva.autenticacion_users.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

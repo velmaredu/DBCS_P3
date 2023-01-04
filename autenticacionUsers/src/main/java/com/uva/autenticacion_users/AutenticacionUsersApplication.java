@@ -1,4 +1,4 @@
-package com.uva.autenticacionUsers;
+package com.uva.autenticacion_users;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
