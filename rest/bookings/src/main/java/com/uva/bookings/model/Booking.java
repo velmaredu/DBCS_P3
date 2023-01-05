@@ -60,9 +60,10 @@ public class Booking {
   @Column(name = "modify_date")
   private Date updatedAt;
 
-  // Constructores
+  /**
+   * Constructor
+   */
   public Booking() {
-    // TODO document why this constructor is empty
   }
 
   public void modified() {
