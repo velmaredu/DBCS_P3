@@ -24,7 +24,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.uva.bookings.exception.BookingException;
 import com.uva.bookings.model.Booking;
+import com.uva.bookings.model.Status;
 import com.uva.bookings.repository.BookingRepository;
 
 @RestController
@@ -92,7 +94,7 @@ public class BookingController {
 
     @GetMapping("/book/{id}")
     public Booking getBook(@PathVariable int id) {
-        return repository.findById(id).orElseThrow(() -> new BookException(DEFUSEREXCEP));
+        return repository.findById(id).orElseThrow(() -> new BookingException(DEFUSEREXCEP));
     }
 
     @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -105,7 +107,7 @@ public class BookingController {
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public String updateBook(@PathVariable int id, @RequestBody Booking body) {
         try {
-            Booking book = repository.findById(id).orElseThrow(() -> new BookException(DEFUSEREXCEP));
+            Booking book = repository.findById(id).orElseThrow(() -> new BookingException(DEFUSEREXCEP));
             Booking tmp = new Booking();
             tmp.setDateIn(body.getDateIn());
             tmp.setDateOut(body.getDateOut());
