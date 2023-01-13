@@ -35,10 +35,7 @@ import com.uva.bookings.repository.BookingRepository;
 public class BookingController {
 
     private final BookingRepository repository;
-    private static final String DEFUSEREXCEP = "Sin resultado";
-    // Este es el secreto compartido entre el servidor y el cliente para firmar el
-    // token JWT
-    private static final String SECRET = "mi_secreto_compartido";
+
 
     public BookingController(BookingRepository repository) {
         this.repository = repository;
@@ -65,13 +62,14 @@ public class BookingController {
     @GetMapping("/book")
     public ResponseEntity<List<Booking>> getBookings(@RequestParam(value = "status", required = false) Status status,
             @RequestParam(value = "start_date", required = false) LocalDate startDate,
-            @RequestParam(value = "end_date", required = false) LocalDate endDate) {
-        String role = getRole();
-        String guestID = getGuestID();
+            @RequestParam(value = "end_date", required = false) LocalDate endDate,
+            @RequestParam("role") String role,
+            @RequestParam("guest_id") String guestID)  {
+       
 
         // // Imprimir el rol del usuario en la consola
         // System.out.println("Rol del usuario: " + role);
-        if (getRole() == "HOST") {
+        if (role == "HOST") {
             // Obtiene el listado de reservas realizadas en el hotel con los campos id,
             // price, unit, numGuest, status, dateIn, dateOut, created_at y guestName,
             // ordenado por fecha ascendente.
@@ -80,7 +78,7 @@ public class BookingController {
             // recomendable también un filtrado por estado.
             List<Booking> bookings = repository.getBookings(status, startDate, endDate);
             return new ResponseEntity<>(bookings, HttpStatus.OK);
-        } else if (getRole() == "GUEST") {
+        } else if (role == "GUEST") {
             // Obtiene el listado de reservas realizadas por él, independientemente de su
             // estado con los campos id, price, units, numGuest, status, dateIn, dateOut y
             // created_at.
@@ -124,6 +122,7 @@ public class BookingController {
         }
     }
 
+    /* 
     public static String getRole() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 
@@ -153,5 +152,6 @@ public class BookingController {
         return jwt.getClaim("guestid").asString();
 
     }
+    */
 
 }
