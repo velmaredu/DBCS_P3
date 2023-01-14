@@ -1,29 +1,18 @@
 package com.uva.bookings.controller;
 
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.uva.bookings.exception.BookingException;
 import com.uva.bookings.model.Booking;
 import com.uva.bookings.model.Status;
@@ -35,59 +24,82 @@ import com.uva.bookings.repository.BookingRepository;
 public class BookingController {
 
     private final BookingRepository repository;
-
+    private static final String DEFUSEREXCEP = "Sin resultado";
+    private static final int NUMHABITACIONES = 10;
+    private static final float PRECIOHABITACION = 40;
 
     public BookingController(BookingRepository repository) {
         this.repository = repository;
     }
 
+    /**
+     * Obtiene el numero de fechas disponibles dentro del rango de fechas
+     * especificado.
+     * Por defecto se seleccionará desde la fecha actual hasta dentro de un mes.
+     * 
+     * @param startDate Fecha de inicio.
+     * @param endDate   Fecha de fin.
+     * 
+     * @return Numero de habitaciones disponibles.
+     */
     @GetMapping("/book/availability")
-    public List<Availability> getAvailability(@RequestParam("startDate") LocalDate startDate,
-            @RequestParam("endDate") LocalDate endDate) {
-        // Query the database for bookings with a dateOut within the given range of
-        // dates
-        List<Booking> bookings = repository.findByDateOutBetween(startDate, endDate);
-
-        // Create a list of availability objects and add an availability object for
-        // each day within the range
-        List<Availability> availability = new ArrayList<>();
-        for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
-            boolean isAvailable = !bookings.stream().anyMatch(b -> b.getDateOut().equals(date));
-            availability.add(new Availability(date, isAvailable));
+    public int getAvailability(@RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) LocalDate endDate) {
+        if (startDate != null && endDate != null) {
+            if (validarFechas(startDate, endDate)) {
+                throw new BookingException(DEFUSEREXCEP);
+            }
+        } else {
+            startDate = LocalDate.now();
+            endDate = LocalDate.now().plusMonths(1);
         }
+        List<Booking> bookings = repository.findByDateOutBetweenOrDateInBetween(startDate, endDate);
 
-        return availability;
+        return NUMHABITACIONES - bookings.size();
     }
 
+    /**
+     * Modo 0: Obtiene el listado de reservas realizadas por él, independientemente
+     * de su estado con los campos id, price, units, numGuest, status, dateIn,
+     * dateOut y created_at. Es recomendable incluir un filtrado por estado.
+     * 
+     * Modo 1: Obtiene el listado de reservas realizadas en el hotel con los campos
+     * id, price, unit, numGuest, status, dateIn, dateOut, created_at y guestName,
+     * ordenado por fecha ascendente. Se aconseja un filtrado entre fechas por
+     * defecto (Por ejemplo, el intervalo de reservas desde hoy a 15 días atrás y
+     * desde hoy a 15 días a futuro. Es recomendable también un filtrado por estado.
+     * 
+     * 
+     * @param mode      Modo
+     * @param status    Status
+     * @param guestID   ID de invitado
+     * @param startDate Fecha de inicio
+     * @param endDate   Fecha de fin
+     * 
+     * @return
+     */
     @GetMapping("/book")
-    public ResponseEntity<List<Booking>> getBookings(@RequestParam(value = "status", required = false) Status status,
+    public List<Booking> getBookings(@RequestParam int mode,
+            @RequestParam(value = "status") Status status,
+            @RequestParam(value = "guestID", required = false, defaultValue = "-1") int guestID,
             @RequestParam(value = "start_date", required = false) LocalDate startDate,
-            @RequestParam(value = "end_date", required = false) LocalDate endDate,
-            @RequestParam("role") String role,
-            @RequestParam("guest_id") String guestID)  {
-       
+            @RequestParam(value = "end_date", required = false) LocalDate endDate) {
 
-        // // Imprimir el rol del usuario en la consola
-        // System.out.println("Rol del usuario: " + role);
-        if (role == "HOST") {
-            // Obtiene el listado de reservas realizadas en el hotel con los campos id,
-            // price, unit, numGuest, status, dateIn, dateOut, created_at y guestName,
-            // ordenado por fecha ascendente.
-            // Se aconseja un filtrado entre fechas por defecto (Por ejemplo, el intervalo
-            // de reservas desde hoy a 15 días atrás y desde hoy a 15 días a futuro. Es
-            // recomendable también un filtrado por estado.
-            List<Booking> bookings = repository.getBookings(status, startDate, endDate);
-            return new ResponseEntity<>(bookings, HttpStatus.OK);
-        } else if (role == "GUEST") {
-            // Obtiene el listado de reservas realizadas por él, independientemente de su
-            // estado con los campos id, price, units, numGuest, status, dateIn, dateOut y
-            // created_at.
-            // Es recomendable incluir un filtrado por estado.
-            List<Booking> bookings = repository.findByGuestIDAndStatus(guestID, status);
-            return new ResponseEntity<>(bookings, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if (mode == 0) {
+            if (guestID == -1) {
+                throw new BookingException(DEFUSEREXCEP);
+            }
+            return repository.findByGuestIDAndStatus(guestID, status)
+                    .orElseThrow(() -> new BookingException(DEFUSEREXCEP));
+        } else if (mode == 1) {
+            if (startDate == null || endDate == null) {
+                startDate = LocalDate.now().minusDays(15);
+                endDate = LocalDate.now().plusDays(15);
+            }
+            return repository
+                    .findByStatusAndFechaInicioGreaterThanEqualAndFechaFinLessThanEqual(status, startDate, endDate);
         }
+        throw new BookingException(DEFUSEREXCEP);
     }
 
     @GetMapping("/book/{id}")
@@ -95,9 +107,15 @@ public class BookingController {
         return repository.findById(id).orElseThrow(() -> new BookingException(DEFUSEREXCEP));
     }
 
+    // Solo para el usuario de tipo guest
     @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void setBook(@RequestBody Booking body) {
-        // Validar datos
+        if (validarFechas(body.getDateIn(), body.getDateOut())) {
+            throw new BookingException(DEFUSEREXCEP);
+        }
+        if (getAvailability(body.getDateIn(), body.getDateOut()) < 1) {
+            throw new BookingException(DEFUSEREXCEP);
+        }
         repository.save(body);
     }
 
@@ -122,36 +140,8 @@ public class BookingController {
         }
     }
 
-    /* 
-    public static String getRole() {
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-
-        // Creamos un verificador de token JWT con nuestro secreto compartido
-        Algorithm algorithm = Algorithm.HMAC256(SECRET);
-        JWTVerifier verifier = JWT.require(algorithm).build();
-
-        // Verificamos el token y obtenemos los claims (afirmaciones) del mismo
-        DecodedJWT jwt = verifier.verify(token);
-
-        // Obtenemos el valor del claim "rol"
-        return jwt.getClaim("rol").asString();
-
+    private boolean validarFechas(LocalDate dateIn, LocalDate dateOut) {
+        return dateIn.isBefore(dateOut) && dateIn.isAfter(LocalDate.now());
     }
-
-    public static String getGuestID() {
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-
-        // Creamos un verificador de token JWT con nuestro secreto compartido
-        Algorithm algorithm = Algorithm.HMAC256(SECRET);
-        JWTVerifier verifier = JWT.require(algorithm).build();
-
-        // Verificamos el token y obtenemos los claims (afirmaciones) del mismo
-        DecodedJWT jwt = verifier.verify(token);
-
-        // Obtenemos el valor del claim "rol"
-        return jwt.getClaim("guestid").asString();
-
-    }
-    */
 
 }

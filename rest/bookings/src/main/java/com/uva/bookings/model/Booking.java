@@ -61,9 +61,11 @@ public class Booking {
   private Date updatedAt;
 
   /**
-   * Constructor
+   * Constructor de la clase Booking
    */
   public Booking() {
+    // Se rellena con el resto de metodos de la clase. No es necesario que el objeto
+    // posea todos sus atributos.
   }
 
   public void modified() {
