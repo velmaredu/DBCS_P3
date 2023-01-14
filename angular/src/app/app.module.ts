@@ -12,13 +12,17 @@ import { HttpClientModule } from "@angular/common/http";
 import { FormsModule } from '@angular/forms';
 import { LoginUsuarioComponent } from './login-usuario/login-usuario.component';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
+import { ListarReservasComponent } from './listar-reservas/listar-reservas.component';
+import { CrearReservaComponent } from './crear-reserva/crear-reserva.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     EditarUsuarioComponent,
     ListarUsuarioComponent,
-    LoginUsuarioComponent
+    LoginUsuarioComponent,
+    ListarReservasComponent,
+    CrearReservaComponent
   ],
   imports: [
     BrowserModule,

@@ -1,4 +1,6 @@
+
 export interface User {
+
     id: Number,
     createdAt: String,
     email: String,
@@ -21,4 +23,29 @@ export interface Datos {
 export enum Role {
     HOST,
     GUEST
+}
+
+export interface Booking {
+
+    id: Number,
+    guestName: String,
+    guestID: Number,
+    guestEmail: String,
+    price: Number,
+    units: Number,
+    numGuest: Number,
+    status: Status,
+    dateIn: String,
+    dateOut: String,
+    createdAt: String,
+    updatedAt: String
+
+}
+
+export enum Status {
+
+    PENDING,
+    CONFIRMED,
+    CANCELED
+
 }

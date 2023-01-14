@@ -5,12 +5,17 @@ import { ListarUsuarioComponent } from './listar-usuario/listar-usuario.componen
 import { EditarUsuarioComponent } from './editar-usuario/editar-usuario.component';
 import { LoginUsuarioComponent } from './login-usuario/login-usuario.component';
 import { AuthGuardService as AuthGuard } from './auth-guard.service';
+import { ListarReservasComponent } from './listar-reservas/listar-reservas.component';
+import { CrearReservaComponent } from './crear-reserva/crear-reserva.component';
 
 const routes: Routes = [
   {path : 'users', component:ListarUsuarioComponent,canActivate:[AuthGuard]},
   {path: 'users/:id/editar', component:EditarUsuarioComponent,canActivate:[AuthGuard]},
   {path: 'users/nuevo', component:EditarUsuarioComponent,canActivate:[AuthGuard]},
   {path: 'login',component:LoginUsuarioComponent},
+  {path : 'book', component:ListarReservasComponent,canActivate:[AuthGuard]},
+  {path : 'book/nuevo', component:CrearReservaComponent,canActivate:[AuthGuard]},
+  /*{path : 'book/:id/editar', component:CrearReservaComponent,canActivate:[AuthGuard]},*/
   {path: '**', redirectTo:'users', pathMatch:'full'}
 ];
 

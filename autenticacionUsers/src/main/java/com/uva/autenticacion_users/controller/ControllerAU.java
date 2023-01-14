@@ -27,11 +27,12 @@ public class ControllerAU {
     public String autentificar(@RequestBody Map<String,String> datos){
 
         
-        String uri = "http://localhost:8080/users/";
+        String uri = "http://users:8080/users/";
         String token = null;
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
         RestTemplate restTemplate = new RestTemplate();
+        System.out.println("x"+datos.get(EMAIL_ID));
         Map<String, String> user = restTemplate.getForObject(uri + "?email="+datos.get(EMAIL_ID), Map.class);
         if (user == null) {
             throw new AuthException("No user found with email: " + datos.get(EMAIL_ID));
