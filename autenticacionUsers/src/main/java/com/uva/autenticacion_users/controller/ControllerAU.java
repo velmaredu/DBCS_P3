@@ -19,7 +19,6 @@ import com.uva.autenticacion_users.util.JwtTokenUtil;
 @CrossOrigin(origins = "*")
 @RequestMapping("/autentificacion")
 public class ControllerAU {
-    private static final String EMAIL_ID = "email";
     
     @Autowired JwtTokenUtil jwtUtil;
 
@@ -32,13 +31,13 @@ public class ControllerAU {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
         RestTemplate restTemplate = new RestTemplate();
-        System.out.println("x"+datos.get(EMAIL_ID));
-        Map<String, String> user = restTemplate.getForObject(uri + "?email="+datos.get(EMAIL_ID), Map.class);
+        
+        Map<String, String> user = restTemplate.getForObject(uri + "?email="+datos.get("email"), Map.class);
         if (user == null) {
-            throw new AuthException("No user found with email: " + datos.get(EMAIL_ID));
+            throw new AuthException("No user found with email: " + datos.get("email"));
         }
 
-        if(encoder.matches(datos.get("password"),user.get("password"))) token = jwtUtil.generateAccessToken(user.get("name"), user.get(EMAIL_ID), user.get("role"));
+        if(encoder.matches(datos.get("password"),user.get("password"))) token = jwtUtil.generateAccessToken(user.get("id"),user.get("name"), user.get("email"), user.get("role"));
         else throw new AuthException("Datos incorrectos");
 
         return token;

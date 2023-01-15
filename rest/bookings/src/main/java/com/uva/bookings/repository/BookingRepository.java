@@ -12,8 +12,9 @@ import com.uva.bookings.model.Status;
 public interface BookingRepository extends JpaRepository<Booking, Integer>{
     Optional<List<Booking>> findByGuestID(int guestID);
     Optional<List<Booking>> findByGuestIDAndStatus(int guestID, Status status);
-    List<Booking> findByDateOutBetweenOrDateInBetween(LocalDate startDate, LocalDate endDate);
-    List<Booking> findByStatusAndFechaInicioGreaterThanEqualAndFechaFinLessThanEqual(Status status, LocalDate starDate, LocalDate endDate);
+    List<Booking> findByDateOutBetween(LocalDate startDate, LocalDate endDate);
+    List<Booking> findByDateInBetween(LocalDate startDate, LocalDate endDate);
+    List<Booking> findByStatusAndDateInGreaterThanEqualAndDateOutLessThanEqual(Status status, LocalDate starDate, LocalDate endDate);
 
 }
 

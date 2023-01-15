@@ -15,10 +15,11 @@ public class JwtTokenUtil {
     @Value("${jwt.secret}")
     private String secretKey;
      
-    public String generateAccessToken(String nombre, String email, String rol) {
+    public String generateAccessToken(String id, String nombre, String email, String rol) {
         
         return Jwts.builder()
                 .setSubject("user")
+		.claim("id",id)
                 .claim("name",nombre)
                 .claim("email",email)
                 .claim("role",rol)

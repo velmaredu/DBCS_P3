@@ -1,7 +1,10 @@
 package com.uva.bookings.controller;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +45,7 @@ public class BookingController {
      * 
      * @return Numero de habitaciones disponibles.
      */
-    @GetMapping("/book/availability")
+    @GetMapping("/availability")
     public int getAvailability(@RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate) {
         if (startDate != null && endDate != null) {
@@ -53,9 +56,12 @@ public class BookingController {
             startDate = LocalDate.now();
             endDate = LocalDate.now().plusMonths(1);
         }
-        List<Booking> bookings = repository.findByDateOutBetweenOrDateInBetween(startDate, endDate);
+        List<Booking> bookings = repository.findByDateOutBetween(startDate, endDate);
+        bookings.addAll(repository.findByDateOutBetween(startDate, endDate));
+        Set<Booking> bookingSet = new HashSet<Booking>(bookings);
+        bookingSet.addAll(bookings);
 
-        return NUMHABITACIONES - bookings.size();
+        return NUMHABITACIONES - bookingSet.size();
     }
 
     /**
@@ -78,7 +84,7 @@ public class BookingController {
      * 
      * @return
      */
-    @GetMapping("/book")
+    @GetMapping()
     public List<Booking> getBookings(@RequestParam int mode,
             @RequestParam(value = "status") Status status,
             @RequestParam(value = "guestID", required = false, defaultValue = "-1") int guestID,
@@ -97,12 +103,12 @@ public class BookingController {
                 endDate = LocalDate.now().plusDays(15);
             }
             return repository
-                    .findByStatusAndFechaInicioGreaterThanEqualAndFechaFinLessThanEqual(status, startDate, endDate);
+                    .findByStatusAndDateInGreaterThanEqualAndDateOutLessThanEqual(status, startDate, endDate);
         }
         throw new BookingException(DEFUSEREXCEP);
     }
 
-    @GetMapping("/book/{id}")
+    @GetMapping("/{id}")
     public Booking getBook(@PathVariable int id) {
         return repository.findById(id).orElseThrow(() -> new BookingException(DEFUSEREXCEP));
     }
