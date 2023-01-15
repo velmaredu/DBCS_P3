@@ -1,7 +1,10 @@
 package com.uva.bookings.controller;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +45,7 @@ public class BookingController {
      * 
      * @return Numero de habitaciones disponibles.
      */
-    @GetMapping("/book/availability")
+    @GetMapping("/availability")
     public int getAvailability(@RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate) {
         if (startDate != null && endDate != null) {
@@ -78,7 +81,7 @@ public class BookingController {
      * 
      * @return
      */
-    @GetMapping("/book")
+    @GetMapping()
     public List<Booking> getBookings(@RequestParam int mode,
             @RequestParam(value = "status") Status status,
             @RequestParam(value = "guestID", required = false, defaultValue = "-1") int guestID,
@@ -102,7 +105,7 @@ public class BookingController {
         throw new BookingException(DEFUSEREXCEP);
     }
 
-    @GetMapping("/book/{id}")
+    @GetMapping("/{id}")
     public Booking getBook(@PathVariable int id) {
         return repository.findById(id).orElseThrow(() -> new BookingException(DEFUSEREXCEP));
     }
