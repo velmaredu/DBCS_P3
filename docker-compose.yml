@@ -149,9 +149,23 @@ services:
     networks:
       - kong-net
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://Users-database:3306/TiendaVinos?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://Users-database:3306/Users?createDatabaseIfNotExist=true
     depends_on:
       - Users-database
+
+  bookings:
+    image: bookings
+    build:
+      context: ./rest/bookings
+      dockerfile: ./Dockerfile
+    ports:
+      - 8080:8080
+    networks:
+      - kong-net
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://Users-database:3306/Bookings?createDatabaseIfNotExist=true
+    depends_on:
+      - Bookings-database
 
   Users-database:
     image: mysql
@@ -170,4 +184,23 @@ services:
       MYSQL_USER: usuario
       MYSQL_PASSWORD: 13121
       MYSQL_DATABASE: Users
+      MYSQL_ROOT_HOST: '%'
+
+  Bookings-database:
+    image: mysql
+    hostname: Bookings-database
+    cap_add:
+      - SYS_NICE
+    restart: unless-stopped
+    ports:
+      - "3307:3306"
+    networks:
+      - kong-net
+    volumes:
+      - users_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 1312
+      MYSQL_USER: usuario
+      MYSQL_PASSWORD: 13121
+      MYSQL_DATABASE: Bookings
       MYSQL_ROOT_HOST: '%'
