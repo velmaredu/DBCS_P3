@@ -53,7 +53,7 @@ public class BookingController {
             startDate = LocalDate.now();
             endDate = LocalDate.now().plusMonths(1);
         }
-        List<Booking> bookings = repository.findByDateOutBetweenOrDateInBetween(startDate, endDate);
+        List<Booking> bookings = repository.findByDateInOrDateOutBetween(startDate, endDate);
 
         return NUMHABITACIONES - bookings.size();
     }
@@ -97,7 +97,7 @@ public class BookingController {
                 endDate = LocalDate.now().plusDays(15);
             }
             return repository
-                    .findByStatusAndFechaInicioGreaterThanEqualAndFechaFinLessThanEqual(status, startDate, endDate);
+                    .findByStatusAndDateInGreaterThanEqualAndDateOutLessThanEqual(status, startDate, endDate);
         }
         throw new BookingException(DEFUSEREXCEP);
     }
