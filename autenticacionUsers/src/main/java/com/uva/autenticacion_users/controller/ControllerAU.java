@@ -26,18 +26,18 @@ public class ControllerAU {
     public String autentificar(@RequestBody Map<String,String> datos){
 
         
-        String uri = "http://users:8080/users/";
+        String uri = "http://localhost:8080/users/";
         String token = null;
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
         RestTemplate restTemplate = new RestTemplate();
         
-        Map<String, String> user = restTemplate.getForObject(uri + "?email="+datos.get("email"), Map.class);
+        Map<String, Object> user = restTemplate.getForObject(uri + "?email="+datos.get("email"), Map.class);
         if (user == null) {
             throw new AuthException("No user found with email: " + datos.get("email"));
         }
 
-        if(encoder.matches(datos.get("password"),user.get("password"))) token = jwtUtil.generateAccessToken(user.get("id"),user.get("name"), user.get("email"), user.get("role"));
+        if(encoder.matches(datos.get("password"),(String)user.get("password"))) token = jwtUtil.generateAccessToken(Integer.toString((int)user.get("id")),(String)user.get("name"), (String)user.get("email"), (String)user.get("role"));
         else throw new AuthException("Datos incorrectos");
 
         return token;

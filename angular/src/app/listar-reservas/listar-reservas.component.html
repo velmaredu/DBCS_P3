@@ -1,3 +1,4 @@
+
 <p *ngIf="mostrarMensaje">{{mensaje}}</p>
 <div class="container">
     <div class="row">
@@ -5,62 +6,67 @@
             <form class="form-inline">
                 <fieldset class="form-group col-sm-12"></fieldset>
                 <fieldset class="form-group col-sm-1">
-                    <a class="btn btn-primary" [routerLink]="['/users/nuevo']">+</a>
+                    <a class="btn btn-primary" [routerLink]="['/book/nuevo']">Crear Reserva</a>
                 </fieldset>
-                <fieldset class="form-group col-sm-1">
-                    <div class="dropdown">
-                        <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          Filtrar
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                          <button class="dropdown-item" type="button" (click)="getUsers_Acceso()" class="btn btn-light">Sin filtro</button>
-                          <button class="dropdown-item" type="button" (click)="filtrarEnabled(true)" class="btn btn-light">Activados</button>
-                          <button class="dropdown-item" type="button" (click)="filtrarEnabled(false)" class="btn btn-light">Desactivados</button>
-                        </div>
-                      </div>
-                </fieldset>
-                <fieldset class="form-group col-sm-1">
-                    <a class="btn btn-info" (click)="activarSeleccionados()">Activar</a>
-                </fieldset>
-                <fieldset class="form-group col-sm-1">
-                    <a class="btn btn-info" (click)="desactivarSeleccionados()">Desactivar</a>
-                </fieldset>
-                <fieldset class="form-group col-sm-1">
-                    <fieldset class="col-sm-12"> 
-                        <a class="btn btn-danger float-end" (click)="logOut()">Logout</a>
-                    </fieldset>
-                </fieldset>
-                
             </form>
+            <div class="col-sm-12">
+                <form method="post">
+                    <div class="form-group"> <!-- Date input -->
+                      <label class="control-label" for="date">Fecha Inicio</label>
+                      <input class="form-control" id="date" name="date" placeholder="MM/DD/YYY"  [(ngModel)]="fechaInicio" type="text"/>
+                    </div>
+
+                   </form>
+            </div>
+            <div class="col-sm-12">
+                <form method="post">
+                    <div class="form-group"> <!-- Date input -->
+                      <label class="control-label" for="date">Fecha Final</label>
+                      <input class="form-control" id="date" name="date" placeholder="MM/DD/YYY" [(ngModel)]="fechaInicio" type="text"/>
+                    </div>
+                    <div class="form-group"> <!-- Submit button -->
+                      <button class="btn btn-primary " name="submit" type="submit">Buscar</button>
+                    </div>
+                   </form>
+            </div>
+            <div class="col-sm-12 dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Estado
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <button class="dropdown-item" (click)="cambiarEstado(0)"> PENDIENTE </button>
+                  <button class="dropdown-item" (click)="cambiarEstado(1)"> CONFIRMADA </button>
+                  <button class="dropdown-item" (click)="cambiarEstado(2)"> CANCELADA </button>
+                </div>
+              </div>
             <table class="table table-striped">
                 <thead>
                     <tr class="row">
-                        <th> </th>
-                        <th>Usuario</th>
-                        <th>Nombre</th>
-                        <th>Apellido</th>
-                        <th>Rol</th>
-                        <th>email</th>
-                        <th>Fecha creación</th>
-                        <th>Fecha modificación</th>
+                        <th [hidden]="role == 'HOST' ? true : false ">Nombre</th>
+                        <th [hidden]="role == 'HOST' ? true : false ">email</th>
+                        <th>Habitaciones</th>
+                        <th>Num. Huespedes</th>
+                        <th>Fecha LLegada</th>
+                        <th>Fecha Salida</th>
+                        <th>Precio</th>
+                        <th>Estado</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr *ngFor="let book of books" class="row">
-                        <td><input class="form-check-input" type="checkbox" value="" id={{user.id}} ></td>
-                        <td><i>{{user.name}}</i></td>
-                        <td><i>{{user.firstName}}</i></td>
-                        <td><i>{{user.lastName}}</i></td>
-                        <td><i>{{user.role}}</i></td>
-                        <td><i>{{user.email}}</i></td>
-                        <td><i>{{user.createdAt}}</i></td>
-                        <td><i>{{user.updatedAt}}</i></td>
-                        <td><a class="btn btn-info" [routerLink]= "['/users', user.id,'editar']" > Editar </a> </td>
-                        <td><a class="btn btn-danger" (click)="borrar(user.id)">-</a></td>
+                        <td><i>{{book.guestName}}</i></td>
+                        <td><i>{{book.guestEmail}}</i></td>
+                        <td><i>{{book.units}}</i></td>
+                        <td><i>{{book.numGuest}}</i></td>
+                        <td><i>{{book.dateIn}}</i></td>
+                        <td><i>{{book.dateOut}}</i></td>
+                        <td><i>{{book.price}}</i></td>
+                        <td><i>{{book.status}}</i></td>
+                        <td><a class="btn btn-info" (click)="confirmarReserva(book)">Ok</a> </td>
+                        <td><a class="btn btn-danger" (click)="cancelarReserva(book)">Cancelar</a></td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-

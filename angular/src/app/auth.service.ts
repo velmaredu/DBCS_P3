@@ -1,3 +1,4 @@
+import { getLocaleId } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Role } from './shared/app.model';
@@ -22,7 +23,12 @@ export class AuthService {
     let decodedJWT;
     token == null ? false :  decodedJWT = JSON.parse(window.atob(token.split('.')[1]));
     return decodedJWT.role;
-
-
   }
+
+  public getId(): string {
+    const token = localStorage.getItem('TOKEN');
+    let decodedJWT;
+    token == null ? false :  decodedJWT = JSON.parse(window.atob(token.split('.')[1]));
+    return decodedJWT.id;
+  } 
 }

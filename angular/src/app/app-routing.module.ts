@@ -13,8 +13,8 @@ const routes: Routes = [
   {path: 'users/:id/editar', component:EditarUsuarioComponent,canActivate:[AuthGuard]},
   {path: 'users/nuevo', component:EditarUsuarioComponent,canActivate:[AuthGuard]},
   {path: 'login',component:LoginUsuarioComponent},
-  {path : 'book', component:ListarReservasComponent,canActivate:[AuthGuard]},
-  {path : 'book/nuevo', component:CrearReservaComponent,canActivate:[AuthGuard]},
+  {path : 'book', component:ListarReservasComponent},
+  {path : 'book/nuevo', component:CrearReservaComponent},
   /*{path : 'book/:id/editar', component:CrearReservaComponent,canActivate:[AuthGuard]},*/
   {path: '**', redirectTo:'users', pathMatch:'full'}
 ];

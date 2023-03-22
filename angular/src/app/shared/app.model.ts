@@ -25,7 +25,7 @@ export enum Role {
     GUEST
 }
 
-export interface Book {
+export interface Booking {
 
     id: Number,
     guestName: String,
